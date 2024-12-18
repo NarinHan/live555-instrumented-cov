@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 #ifndef INSTRUMENTING_H
 #define INSTRUMENTING_H
 #include "instrumenting.h"
@@ -50,10 +55,16 @@ OggFileParser::OggFileParser(OggFile& ourFile, FramedSource* inputSource,
     fPacketSizeTable(NULL), fCurrentTrackNumber(0), fSavedPacket(NULL) {
   if (ourDemux == NULL) {
     // Initialization
+    {  // Begin logged block
     fCurrentParseState = PARSING_START_OF_FILE;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     continueParsing();
   } else {
+    {  // Begin logged block
     fCurrentParseState = PARSING_AND_DELIVERING_PAGES;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     // In this case, parsing (of page data) doesn't start until a client starts reading from a track.
   }
 }
@@ -831,7 +842,10 @@ Boolean OggFileParser::parseAndDeliverPage() {
   // Start delivering packets next:
   demuxedTrack->fCurrentPageIsContinuation = (header_type_flag&0x01) != 0;
   fCurrentTrackNumber = bitstream_serial_number;
-  fCurrentParseState = DELIVERING_PACKET_WITHIN_PAGE;
+    {  // Begin logged block
+    fCurrentParseState = DELIVERING_PACKET_WITHIN_PAGE;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
   saveParserState();
   return False;
 }
@@ -948,7 +962,10 @@ Boolean OggFileParser::deliverPacketWithinPage() {
   if (packetNum == fPacketSizeTable->numCompletedPackets) {
     // This delivery was for an incomplete packet, at the end of the page.
     // Return without completing delivery:
+    {  // Begin logged block
     fCurrentParseState = PARSING_AND_DELIVERING_PAGES;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
     return False;
   }
  
@@ -959,7 +976,10 @@ Boolean OggFileParser::deliverPacketWithinPage() {
     ++fPacketSizeTable->nextPacketNumToDeliver;
   } else {
     // Start parsing a new page next:
+    {  // Begin logged block
     fCurrentParseState = PARSING_AND_DELIVERING_PAGES;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
   }
   
   FramedSource::afterGetting(demuxedTrack); // completes delivery

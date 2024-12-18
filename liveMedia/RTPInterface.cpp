@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 #ifndef INSTRUMENTING_H
 #define INSTRUMENTING_H
 #include "instrumenting.h"
@@ -522,7 +527,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
 #ifdef DEBUG_RECEIVE
 	fprintf(stderr, "SocketDescriptor(socket %d)::tcpReadHandler(): Saw '$'\n", fOurSocketNum);
 #endif
-	fTCPReadingState = AWAITING_STREAM_CHANNEL_ID;
+    {  // Begin logged block
+    fTCPReadingState = AWAITING_STREAM_CHANNEL_ID;
+    LOG_VAR_INT(fTCPReadingState); // Auto-logged
+    }  // End logged block
       } else {
 	// This character is part of a RTSP request or command, which is handled separately:
 	if (fServerRequestAlternativeByteHandler != NULL && c != 0xFF && c != 0xFE) {
@@ -536,20 +544,29 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
       // The byte that we read is the stream channel id.
       if (lookupRTPInterface(c) != NULL) { // sanity check
 	fStreamChannelId = c;
-	fTCPReadingState = AWAITING_SIZE1;
+    {  // Begin logged block
+    fTCPReadingState = AWAITING_SIZE1;
+    LOG_VAR_INT(fTCPReadingState); // Auto-logged
+    }  // End logged block
       } else {
 	// This wasn't a stream channel id that we expected.  We're (somehow) in a strange state.  Try to recover:
 #ifdef DEBUG_RECEIVE
 	fprintf(stderr, "SocketDescriptor(socket %d)::tcpReadHandler(): Saw nonexistent stream channel id: 0x%02x\n", fOurSocketNum, c);
 #endif
-	fTCPReadingState = AWAITING_DOLLAR;
+    {  // Begin logged block
+    fTCPReadingState = AWAITING_DOLLAR;
+    LOG_VAR_INT(fTCPReadingState); // Auto-logged
+    }  // End logged block
       }
       break;
     }
     case AWAITING_SIZE1: {
       // The byte that we read is the first (high) byte of the 16-bit RTP or RTCP packet 'size'.
       fSizeByte1 = c;
-      fTCPReadingState = AWAITING_SIZE2;
+    {  // Begin logged block
+    fTCPReadingState = AWAITING_SIZE2;
+    LOG_VAR_INT(fTCPReadingState); // Auto-logged
+    }  // End logged block
       break;
     }
     case AWAITING_SIZE2: {
@@ -563,12 +580,18 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
 	rtpInterface->fNextTCPReadStreamSocketNum = fOurSocketNum;
 	rtpInterface->fNextTCPReadStreamChannelId = fStreamChannelId;
       }
-      fTCPReadingState = AWAITING_PACKET_DATA;
+    {  // Begin logged block
+    fTCPReadingState = AWAITING_PACKET_DATA;
+    LOG_VAR_INT(fTCPReadingState); // Auto-logged
+    }  // End logged block
       break;
     }
     case AWAITING_PACKET_DATA: {
       callAgain = False;
-      fTCPReadingState = AWAITING_DOLLAR; // the next state, unless we end up having to read more data in the current state
+    {  // Begin logged block
+    fTCPReadingState = AWAITING_DOLLAR; // the next state, unless we end up having to read more data in the current state
+    LOG_VAR_INT(fTCPReadingState); // Auto-logged
+    }  // End logged block
       // Call the appropriate read handler to get the packet data from the TCP stream:
       RTPInterface* rtpInterface = lookupRTPInterface(fStreamChannelId);
       if (rtpInterface != NULL) {
@@ -580,7 +603,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
 #ifdef DEBUG_RECEIVE
 	  fprintf(stderr, "SocketDescriptor(socket %d)::tcpReadHandler(): reading %d bytes on channel %d\n", fOurSocketNum, rtpInterface->fNextTCPReadSize, rtpInterface->fNextTCPReadStreamChannelId);
 #endif
-	  fTCPReadingState = AWAITING_PACKET_DATA;
+    {  // Begin logged block
+    fTCPReadingState = AWAITING_PACKET_DATA;
+    LOG_VAR_INT(fTCPReadingState); // Auto-logged
+    }  // End logged block
 	  rtpInterface->fReadHandlerProc(rtpInterface->fOwner, mask);
 	} else {
 #ifdef DEBUG_RECEIVE
@@ -595,7 +621,10 @@ Boolean SocketDescriptor::tcpReadHandler1(int mask) {
 	    fDeleteMyselfNext = True;
 	    return False;
 	  } else {
-	    fTCPReadingState = AWAITING_PACKET_DATA;
+    {  // Begin logged block
+    fTCPReadingState = AWAITING_PACKET_DATA;
+    LOG_VAR_INT(fTCPReadingState); // Auto-logged
+    }  // End logged block
 	    if (result == 1) {
 	      --rtpInterface->fNextTCPReadSize;
 	      callAgain = True;

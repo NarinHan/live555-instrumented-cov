@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 #ifndef INSTRUMENTING_H
 #define INSTRUMENTING_H
 #include "instrumenting.h"
@@ -178,7 +183,10 @@ MPEG4VideoStreamParser::~MPEG4VideoStreamParser() {
 }
 
 void MPEG4VideoStreamParser::setParseState(MPEGParseState parseState) {
-  fCurrentParseState = parseState;
+    {  // Begin logged block
+    fCurrentParseState = parseState;
+    LOG_VAR_INT(fCurrentParseState); // Auto-logged
+    }  // End logged block
   MPEGVideoStreamParser::setParseState();
 }
 

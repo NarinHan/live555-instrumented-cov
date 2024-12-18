@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 #ifndef INSTRUMENTING_H
 #define INSTRUMENTING_H
 #include "instrumenting.h"
@@ -128,7 +133,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
 	  fFrameCount = 1; // reset to avoid overflow
 	  if (fDirection > 0) {
 	    // Begin delivering this frame, as we're scanning it:
-	    fState = SAVING_AND_DELIVERING_FRAME;
+    {  // Begin logged block
+    fState = SAVING_AND_DELIVERING_FRAME;
+    LOG_VAR_INT(fState); // Auto-logged
+    }  // End logged block
 	    //	    fprintf(stderr, "\tdelivering\n");//#####
 	    fDesiredDataPCR = recordPCR; // use this frame's PCR
 	    attemptDeliveryToClient();
@@ -136,7 +144,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
 	  } else {
 	    // Deliver this frame, then resume normal scanning:
 	    // (This relies on the index records having begun with an I-frame.)
-	    fState = DELIVERING_SAVED_FRAME;
+    {  // Begin logged block
+    fState = DELIVERING_SAVED_FRAME;
+    LOG_VAR_INT(fState); // Auto-logged
+    }  // End logged block
 	    fSavedSequentialIndexRecordNum = fNextIndexRecordNum;
 	    fDesiredDataPCR = recordPCR;
 	    // use this frame's (not the saved frame's) PCR
@@ -145,14 +156,20 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
 	  }
 	} else {
 	  // No frame is needed now:
-	  fState = SKIPPING_FRAME;
+    {  // Begin logged block
+    fState = SKIPPING_FRAME;
+    LOG_VAR_INT(fState); // Auto-logged
+    }  // End logged block
 	}
       } else if (isNonIFrameStart(recordType)) {
 	if ((fFrameCount++)%fScale == 0 && fUseSavedFrameNextTime) {
 	  // A frame is due now, so begin delivering the one that we had saved:
 	  // (This relies on the index records having begun with an I-frame.)
 	  fFrameCount = 1; // reset to avoid overflow
-	  fState = DELIVERING_SAVED_FRAME;
+    {  // Begin logged block
+    fState = DELIVERING_SAVED_FRAME;
+    LOG_VAR_INT(fState); // Auto-logged
+    }  // End logged block
 	  fSavedSequentialIndexRecordNum = fNextIndexRecordNum;
 	  fDesiredDataPCR = recordPCR;
 	  // use this frame's (not the saved frame's) PCR
@@ -160,7 +177,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
 	  //	  fprintf(stderr, "\tbeginning delivery of saved frame\n");//#####
 	} else {
 	  // No frame is needed now:
-	  fState = SKIPPING_FRAME;
+    {  // Begin logged block
+    fState = SKIPPING_FRAME;
+    LOG_VAR_INT(fState); // Auto-logged
+    }  // End logged block
 	}
       } else {
 	// Not the start of a frame, but deliver it, if it's needed:
@@ -184,7 +204,10 @@ void MPEG2TransportStreamTrickModeFilter::doGetNextFrame() {
 	// original sequence of index records:
 	fNextIndexRecordNum = fSavedSequentialIndexRecordNum;
 	fUseSavedFrameNextTime = KEEP_ORIGINAL_FRAME_RATE;
-	fState = SKIPPING_FRAME;
+    {  // Begin logged block
+    fState = SKIPPING_FRAME;
+    LOG_VAR_INT(fState); // Auto-logged
+    }  // End logged block
       } else {
 	// Continue delivering:
 	//	fprintf(stderr, "\tdelivering\n");//#####
