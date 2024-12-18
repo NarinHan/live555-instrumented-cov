@@ -1,3 +1,10 @@
+#ifndef INSTRUMENTING_H
+#define INSTRUMENTING_H
+#include "instrumenting.h"
+#endif
+
+static int prev;
+
 #ifndef _NET_COMMON_H
 #include "NetCommon.h"
 #endif

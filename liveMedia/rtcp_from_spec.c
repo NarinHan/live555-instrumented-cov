@@ -1,3 +1,10 @@
+#ifndef INSTRUMENTING_H
+#define INSTRUMENTING_H
+#include "instrumenting.h"
+#endif
+
+static int prev;
+
 /* RTCP code taken directly from the most recent RTP specification:
  *     RFC 3550
  * Implementation

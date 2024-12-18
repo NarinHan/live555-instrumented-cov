@@ -1,3 +1,10 @@
+#ifndef INSTRUMENTING_H
+#define INSTRUMENTING_H
+#include "instrumenting.h"
+#endif
+
+static int prev;
+
 #include <stdio.h>
 #include "instrumenting.h"
 
